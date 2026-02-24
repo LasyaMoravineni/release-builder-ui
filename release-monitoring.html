@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Release Monitoring Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- ===========================
+         SIDEBAR
+    =========================== -->
+    <div class="sidebar">
+        <div class="sidebar-title">Release Monitoring</div>
+
+        <ul class="step-nav" id="stepNav">
+            <li data-step="1" class="active">1. Release Information</li>
+            <li data-step="2">2. Monitoring Category</li>
+            <li data-step="3">3. Validation Summary</li>
+            <li data-step="4">4. Review</li>
+        </ul>
+    </div>
+
+
+    <!-- ===========================
+         MAIN WIZARD CONTENT
+    =========================== -->
+    <div class="wizard-content">
+
+        <!-- =======================================
+             STEP 1 — Release Information
+        ======================================== -->
+        <div class="step-panel active" id="step1">
+
+            <div class="form-section-title">Release Info</div>
+
+            <div class="form-card">
+
+                <div class="form-group">
+                    <label class="form-label">File Type</label>
+                    <input type="text" class="form-input" value="release_monitoring" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Release Version *</label>
+                    <input type="text" id="rm_release_version" class="form-input" placeholder="Example: R6.12.0">
+                    <div class="error-msg" id="rm_release_version_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Release Date *</label>
+                    <input type="date" id="rm_release_date" class="form-input">
+                    <div class="error-msg" id="rm_release_date_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Environment *</label>
+                    <select id="rm_environment" class="form-select">
+                        <option value="">Select</option>
+                        <option>Development</option>
+                        <option>QA</option>
+                        <option>Stage</option>
+                        <option>Production</option>
+                    </select>
+                    <div class="error-msg" id="rm_environment_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Monitored By *</label>
+                    <input type="text" id="rm_monitored_by" class="form-input" placeholder="Team / Owner">
+                    <div class="error-msg" id="rm_monitored_by_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Monitoring Summary</label>
+                    <textarea id="rm_monitoring_summary" class="form-textarea"></textarea>
+                </div>
+
+            </div>
+
+        </div> <!-- END STEP 1 -->
+
+
+
+      <!-- =======================================
+     STEP 2 — CATEGORY SELECTION + DETAILS
+======================================= -->
+<div class="step-panel" id="step2">
+
+    <div class="form-section-title">Monitoring Category</div>
+
+    <div class="form-card">
+        <div class="form-group">
+            <label class="form-label">Select Category *</label>
+            <select id="rm_category_selector" class="form-select">
+                <option value="">Select Category</option>
+                <option value="api_health">API Health Monitoring</option>
+                <option value="exception">Exception Monitoring</option>
+                <option value="infrastructure">Infrastructure Monitoring</option>
+                <option value="log">Log Monitoring</option>
+                <option value="aws_services">AWS Services Monitoring</option>
+                <option value="queue">Queue Monitoring</option>
+                <option value="alb">ALB Exceptions</option>
+            </select>
+            <div class="error-msg" id="rm_category_selector_err"></div>
+        </div>
+    </div>
+
+
+    <div id="dynamicCategorySections" class="form-card">
+
+        <!-- ========= API HEALTH ========= -->
+        <section id="section_api_health" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">API Health Monitoring</div>
+            <div id="api_health_container"></div>
+            <button type="button" id="add_api_health_btn" class="btn-primary add-entry-btn" data-cat="api_health">+ Add Entry</button>
+        </section>
+
+        <!-- ========= EXCEPTION ========= -->
+        <section id="section_exception" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">Exception Monitoring</div>
+            <div id="exception_container"></div>
+            <button type="button" id="add_exception_btn" class="btn-primary add-entry-btn" data-cat="exception">+ Add Entry</button>
+        </section>
+
+        <!-- ========= INFRASTRUCTURE ========= -->
+        <section id="section_infrastructure" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">Infrastructure Monitoring</div>
+            <div id="infrastructure_container"></div>
+            <button type="button" id="add_infra_btn" class="btn-primary add-entry-btn" data-cat="infrastructure">+ Add Entry</button>
+        </section>
+
+        <!-- ========= LOG ========= -->
+        <section id="section_log" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">Log Monitoring</div>
+            <div id="log_container"></div>
+            <button type="button" id="add_log_btn" class="btn-primary add-entry-btn" data-cat="log">+ Add Entry</button>
+        </section>
+
+        <!-- ========= AWS SERVICES ========= -->
+        <section id="section_aws_services" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">AWS Services Monitoring</div>
+            <div id="aws_container"></div>
+            <button type="button" id="add_aws_btn" class="btn-primary add-entry-btn" data-cat="aws_services">+ Add Entry</button>
+        </section>
+
+        <!-- ========= QUEUE ========= -->
+        <section id="section_queue" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">Queue Monitoring</div>
+            <div id="queue_container"></div>
+            <button type="button" id="add_queue_btn" class="btn-primary add-entry-btn" data-cat="queue">+ Add Entry</button>
+        </section>
+
+        <!-- ========= ALB ========= -->
+        <section id="section_alb" class="dynamic-section" style="display:none;">
+            <div class="subsection-title">ALB Exceptions</div>
+            <div id="alb_container"></div>
+            <button type="button" id="add_alb_btn" class="btn-primary add-entry-btn" data-cat="alb">+ Add Entry</button>
+        </section>
+
+    </div>
+</div>
+
+<!-- ==========================
+     TEMPLATES FOR EACH ENTRY
+=========================== -->
+
+
+<!-- API Health Monitoring -->
+<template id="template_api_health">
+<div class="entry-card">
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Endpoint Name *</label>
+        <input type="text" class="form-input endpoint_name">
+        <div class="error-msg endpoint_name_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Endpoint URL *</label>
+        <input type="text" class="form-input endpoint_url">
+        <div class="error-msg endpoint_url_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Check Type *</label>
+        <select class="form-select check_type">
+            <option value="">Select</option>
+            <option>HTTP</option>
+            <option>HTTPS</option>
+        </select>
+        <div class="error-msg check_type_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Expected Status Codes</label>
+        <input type="text" class="form-input expected_status_codes">
+        <div class="error-msg expected_status_codes_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Latency Threshold (ms)</label>
+        <input type="number" class="form-input latency_threshold_ms">
+        <div class="error-msg latency_threshold_ms_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Check Frequency (sec)</label>
+        <input type="number" class="form-input check_frequency_sec">
+        <div class="error-msg check_frequency_sec_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg alert_reason_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Monitoring Interval</label>
+        <input type="text" class="form-input monitoring_interval">
+        <div class="error-msg monitoring_interval_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+</div>
+</template>
+
+
+
+<!-- Exception Monitoring -->
+
+<template id="template_exception">
+<div class="entry-card">
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Index Name -->
+    <div class="form-group">
+        <label class="form-label">Index Name *</label>
+        <input type="text" class="form-input index_name">
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Timestamp Field -->
+    <div class="form-group">
+        <label class="form-label">Timestamp Field *</label>
+        <input type="text" class="form-input timestamp_field">
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Monitoring Fields -->
+    <div class="form-group">
+        <label class="form-label">Monitoring Fields</label>
+        <input type="text" class="form-input monitoring_fields">
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Monitoring Interval -->
+    <div class="form-group">
+        <label class="form-label">Monitoring Interval</label>
+        <input type="text" class="form-input monitoring_interval">
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Reason -->
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Sample Query -->
+    <div class="form-group">
+        <label class="form-label">Sample Query</label>
+        <textarea class="form-textarea sample_query"></textarea>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg field_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg field_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+
+<!-- Infrastructure Monitoring -->
+
+<template id="template_infrastructure">
+<div class="entry-card">
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <!-- Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <!-- Dashboard Name -->
+    <div class="form-group">
+        <label class="form-label">Dashboard Name *</label>
+        <input type="text" class="form-input dashboard_name">
+        <div class="error-msg dashboard_name_err"></div>
+    </div>
+
+    <!-- Panel Name -->
+    <div class="form-group">
+        <label class="form-label">Panel Name *</label>
+        <input type="text" class="form-input panel_name">
+        <div class="error-msg panel_name_err"></div>
+    </div>
+
+    <!-- Datasource -->
+    <div class="form-group">
+        <label class="form-label">Datasource</label>
+        <input type="text" class="form-input datasource">
+        <div class="error-msg datasource_err"></div>
+    </div>
+
+    <!-- Metric Query -->
+    <div class="form-group">
+        <label class="form-label">Metric Query *</label>
+        <textarea class="form-textarea metric_query"></textarea>
+        <div class="error-msg metric_query_err"></div>
+    </div>
+
+    <!-- Threshold Value -->
+    <div class="form-group">
+        <label class="form-label">Threshold Value</label>
+        <input type="number" class="form-input threshold_value">
+        <div class="error-msg threshold_value_err"></div>
+    </div>
+
+    <!-- Threshold Unit -->
+    <div class="form-group">
+        <label class="form-label">Threshold Unit</label>
+        <select class="form-select threshold_unit">
+            <option value="">Select</option>
+            <option>Percent</option>
+            <option>Count</option>
+            <option>Bytes</option>
+        </select>
+        <div class="error-msg threshold_unit_err"></div>
+    </div>
+
+    <!-- Evaluation Interval -->
+    <div class="form-group">
+        <label class="form-label">Evaluation Interval</label>
+        <input type="text" class="form-input evaluation_interval">
+        <div class="error-msg evaluation_interval_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <!-- Alert Reason -->
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg alert_reason_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+<!-- Log Monitoring -->
+
+
+<template id="template_log">
+<div class="entry-card">
+
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <!-- Alert Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <!-- Index Name -->
+    <div class="form-group">
+        <label class="form-label">Index Name *</label>
+        <input type="text" class="form-input index_name">
+        <div class="error-msg index_name_err"></div>
+    </div>
+
+    <!-- Timestamp Field -->
+    <div class="form-group">
+        <label class="form-label">Timestamp Field *</label>
+        <input type="text" class="form-input timestamp_field">
+        <div class="error-msg timestamp_field_err"></div>
+    </div>
+
+    <!-- Monitoring Fields -->
+    <div class="form-group">
+        <label class="form-label">Monitoring Fields</label>
+        <input type="text" class="form-input monitoring_fields">
+        <div class="error-msg monitoring_fields_err"></div>
+    </div>
+
+    <!-- Monitoring Interval -->
+    <div class="form-group">
+        <label class="form-label">Monitoring Interval</label>
+        <input type="text" class="form-input monitoring_interval">
+        <div class="error-msg monitoring_interval_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <!-- Alert Reason -->
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg alert_reason_err"></div>
+    </div>
+
+    <!-- Sample Query -->
+    <div class="form-group">
+        <label class="form-label">Sample Query</label>
+        <textarea class="form-textarea sample_query"></textarea>
+        <div class="error-msg sample_query_err"></div>
+    </div>
+
+    <!-- Threshold Count -->
+    <div class="form-group">
+        <label class="form-label">Threshold Count</label>
+        <input type="number" class="form-input threshold_count">
+        <div class="error-msg threshold_count_err"></div>
+    </div>
+
+    <!-- Threshold Period -->
+    <div class="form-group">
+        <label class="form-label">Threshold Period (min)</label>
+        <input type="number" class="form-input threshold_period_min">
+        <div class="error-msg threshold_period_min_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+
+<!-- AWS Services Monitoring -->
+
+
+<template id="template_aws_services">
+<div class="entry-card">
+
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <!-- Service Name -->
+    <div class="form-group">
+        <label class="form-label">Service Name *</label>
+        <select class="form-select service_name">
+            <option value="">Select</option>
+            <option>S3</option>
+            <option>Lambda</option>
+            <option>MKS</option>
+            <option>EKS</option>
+        </select>
+        <div class="error-msg service_name_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <!-- Alert Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <!-- Metric Name -->
+    <div class="form-group">
+        <label class="form-label">Metric Name *</label>
+        <input type="text" class="form-input metric_name">
+        <div class="error-msg metric_name_err"></div>
+    </div>
+
+    <!-- Namespace -->
+    <div class="form-group">
+        <label class="form-label">Namespace *</label>
+        <input type="text" class="form-input namespace">
+        <div class="error-msg namespace_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <!-- Threshold -->
+    <div class="form-group">
+        <label class="form-label">Threshold *</label>
+        <input type="number" class="form-input threshold">
+        <div class="error-msg threshold_err"></div>
+    </div>
+
+    <!-- Comparison Operator -->
+    <div class="form-group">
+        <label class="form-label">Comparison Operator *</label>
+        <select class="form-select comparison_operator">
+            <option value="">Select</option>
+            <option>GreaterThan</option>
+            <option>LessThan</option>
+            <option>GreaterThanOrEqualToThreshold</option>
+        </select>
+        <div class="error-msg comparison_operator_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+<!-- Queue Monitoring -->
+
+<template id="template_queue">
+<div class="entry-card">
+
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <!-- Alert Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <!-- Queue Name -->
+    <div class="form-group">
+        <label class="form-label">Queue Name *</label>
+        <input type="text" class="form-input queue_name">
+        <div class="error-msg queue_name_err"></div>
+    </div>
+
+    <!-- Index Name -->
+    <div class="form-group">
+        <label class="form-label">Index Name *</label>
+        <input type="text" class="form-input index_name">
+        <div class="error-msg index_name_err"></div>
+    </div>
+
+    <!-- Threshold Value -->
+    <div class="form-group">
+        <label class="form-label">Threshold Value *</label>
+        <input type="number" class="form-input threshold_value">
+        <div class="error-msg threshold_value_err"></div>
+    </div>
+
+    <!-- Threshold Unit -->
+    <div class="form-group">
+        <label class="form-label">Threshold Unit *</label>
+        <select class="form-select threshold_unit">
+            <option value="">Select</option>
+            <option>Messages</option>
+            <option>Count</option>
+        </select>
+        <div class="error-msg threshold_unit_err"></div>
+    </div>
+
+    <!-- Monitoring Interval -->
+    <div class="form-group">
+        <label class="form-label">Monitoring Interval</label>
+        <input type="text" class="form-input monitoring_interval">
+        <div class="error-msg monitoring_interval_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <!-- Alert Reason -->
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg alert_reason_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+</div>
+</template>
+
+
+
+<!-- ALB Exceptions -->
+
+<template id="template_alb">
+<div class="entry-card">
+
+    <div class="entry-header">
+        <span class="entry-title">Entry</span>
+        <button type="button" class="btn-icon remove-entry">-</button>
+    </div>
+
+    <!-- Alert Source -->
+    <div class="form-group">
+        <label class="form-label">Alert Source *</label>
+        <select class="form-select alert_source" multiple>
+            <option>Pingdom</option>
+            <option>Grafana</option>
+            <option>IMImonitor</option>
+            <option>AWS CloudWatch</option>
+            <option>Bespoke</option>
+            <option>Lambda</option>
+            <option>Athena</option>
+        </select>
+        <div class="error-msg alert_source_err"></div>
+    </div>
+
+    <!-- Alert Action -->
+    <div class="form-group">
+        <label class="form-label">Alert Action *</label>
+        <select class="form-select alert_action">
+            <option value="">Select</option>
+            <option>add</option>
+            <option>update</option>
+            <option>delete</option>
+        </select>
+        <div class="error-msg alert_action_err"></div>
+    </div>
+
+    <!-- Alert Channel -->
+    <div class="form-group">
+        <label class="form-label">Alert Channel *</label>
+        <select class="form-select alert_channel" multiple>
+            <option>PagerDuty</option>
+            <option>ServiceNow</option>
+            <option>Email</option>
+        </select>
+        <div class="error-msg alert_channel_err"></div>
+    </div>
+
+    <!-- Alert Owner -->
+    <div class="form-group">
+        <label class="form-label">Alert Owner</label>
+        <input type="text" class="form-input alert_owner" placeholder="user@cisco.com">
+        <div class="error-msg alert_owner_err"></div>
+    </div>
+
+    <!-- ALB Name -->
+    <div class="form-group">
+        <label class="form-label">ALB Name *</label>
+        <input type="text" class="form-input alb_name">
+        <div class="error-msg alb_name_err"></div>
+    </div>
+
+    <!-- Metric Name -->
+    <div class="form-group">
+        <label class="form-label">Metric Name *</label>
+        <input type="text" class="form-input metric_name">
+        <div class="error-msg metric_name_err"></div>
+    </div>
+
+    <!-- Threshold Value -->
+    <div class="form-group">
+        <label class="form-label">Threshold Value *</label>
+        <input type="number" class="form-input threshold_value">
+        <div class="error-msg threshold_value_err"></div>
+    </div>
+
+    <!-- Threshold Unit -->
+    <div class="form-group">
+        <label class="form-label">Threshold Unit</label>
+        <select class="form-select threshold_unit">
+            <option value="">Select</option>
+            <option>Count</option>
+            <option>Percent</option>
+        </select>
+        <div class="error-msg threshold_unit_err"></div>
+    </div>
+
+    <!-- Evaluation Interval -->
+    <div class="form-group">
+        <label class="form-label">Evaluation Interval</label>
+        <input type="text" class="form-input evaluation_interval">
+        <div class="error-msg evaluation_interval_err"></div>
+    </div>
+
+    <!-- Alert Priority -->
+    <div class="form-group">
+        <label class="form-label">Alert Priority *</label>
+        <select class="form-select alert_priority">
+            <option value="">Select</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+        </select>
+        <div class="error-msg alert_priority_err"></div>
+    </div>
+
+    <!-- Alert Condition -->
+    <div class="form-group">
+        <label class="form-label">Alert Condition *</label>
+        <textarea class="form-textarea alert_condition"></textarea>
+        <div class="error-msg alert_condition_err"></div>
+    </div>
+
+    <!-- Alert Reason -->
+    <div class="form-group">
+        <label class="form-label">Alert Reason *</label>
+        <textarea class="form-textarea alert_reason"></textarea>
+        <div class="error-msg alert_reason_err"></div>
+    </div>
+
+    <!-- Athena Query -->
+    <div class="form-group">
+        <label class="form-label">Athena Query</label>
+        <textarea class="form-textarea athena_query"></textarea>
+        <div class="error-msg athena_query_err"></div>
+    </div>
+
+    <!-- Remediation Actions -->
+    <div class="form-group">
+        <label class="form-label">Remediation Actions *</label>
+        <button type="button" class="btn-secondary add-remediation">+ Add Action</button>
+        <div class="chip-box remediation_actions"></div>
+        <div class="error-msg remediation_actions_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+
+
+
+
+
+
+
+
+        <!-- =======================================
+             STEP 3 — VALIDATION SUMMARY
+        ======================================== -->
+        <div class="step-panel" id="step3">
+
+            <div class="form-section-title">Validation Summary</div>
+
+            <div id="validation_results" class="validation-list"></div>
+
+            <div class="form-card">
+
+                <div class="form-group">
+                    <label class="form-label">Validated By *</label>
+                    <input type="email" id="validated_by" class="form-input" placeholder="user@cisco.com">
+                    <div class="error-msg" id="validated_by_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Validation Status *</label>
+                    <select id="validation_status" class="form-select">
+                        <option value="">Select Status</option>
+                        <option>Completed Successfully</option>
+                        <option>Failed</option>
+                        <option>Partially Completed</option>
+                    </select>
+                    <div class="error-msg" id="validation_status_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Last Validated On</label>
+                    <input 
+                        type="text" 
+                        id="last_validated_on" 
+                        class="form-input" 
+                        placeholder="YYYY-MM-DD HH:MM:SS"
+                    >
+                    <div class="error-msg" id="last_validated_on_err"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Validation Comments</label>
+                    <textarea id="validation_comments" class="form-textarea"></textarea>
+                </div>
+
+            </div>
+
+        </div><!-- END STEP 3 -->
+
+
+
+        <!-- =======================================
+             STEP 4 — REVIEW
+        ======================================== -->
+        <div class="step-panel" id="step4">
+
+            <div class="form-section-title">Review & Generate JSON</div>
+
+            <pre id="json_output" class="json-preview">{}</pre>
+
+            <div id="validation_status_box" class="small-note">
+                Please validate the JSON before downloading.
+            </div>
+            <div id="json_errors" style="margin-bottom:12px"></div>
+
+            <button class="btn-primary" id="validateJsonBtn">Validate JSON</button>
+            <button class="btn-primary copy-btn" id="copyBtn">Copy JSON</button>
+            <button id="download_btn" class="btn-primary" disabled>Download JSON</button>
+
+            
+
+
+        </div><!-- END STEP 4 -->
+
+
+
+        <!-- NAVIGATION BUTTONS -->
+        <div class="wizard-nav">
+            <button class="btn-secondary" id="backBtn">Back</button>
+            <button class="btn-primary" id="nextBtn">Next</button>
+        </div>
+
+    </div><!-- wizard-content -->
+</div><!-- page-container -->
+
+<script src="scripts/shared-validator.js"></script>
+<script src="scripts/release-monitoring-script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,370 @@
+/* ============================================================
+   GLOBAL THEME VARIABLES
+   (Applies to all 4 Release Tools)
+============================================================ */
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+
+    --gray-bg: #f3f4f6;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+
+    --radius-sm: 0.35rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+
+    --shadow-soft: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-medium: 0 10px 15px -3px rgba(89, 7, 7, 0.1);
+}
+
+/* ============================================================
+   BASE LAYOUT
+============================================================ */
+body {
+    font-family: "Inter", sans-serif;
+    background: var(--gray-bg);
+    margin: 0;
+    color: var(--gray-800);
+}
+
+.page-container,
+.main-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    gap: 2rem;
+}
+
+/* Wizard primary panels */
+.wizard-container,
+.wizard-content {
+    background: white;
+    padding: 2rem;
+    max-width: 60rem;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+}
+
+/* ============================================================
+   SIDEBAR NAVIGATION
+============================================================ */
+.sidebar {
+    width: 260px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    height: fit-content;
+    position: sticky;
+    top: 1.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.step-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.step-nav li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: 0.15s;
+}
+
+.step-nav li:hover {
+    background: var(--gray-100);
+}
+
+.step-nav li.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* ============================================================
+   STEP PANELS
+============================================================ */
+.step-panel {
+    display: none;
+}
+
+.step-panel.active {
+    display: block;
+    animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   FORM ELEMENTS (Unified for all tools)
+============================================================ */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-section-title{
+    font-size: x-large;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.subsection-title{
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 90%;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-300);
+    background: var(--gray-50);
+    font-size: 14px;
+    color: var(--gray-800);
+    box-sizing: border-box;
+}
+
+.form-input{
+    display: block;
+}
+
+.form-textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Error messages */
+.error-msg {
+    font-size: 0.8rem;
+    color: #dc2626;
+    margin-top: 4px;
+    min-height: 1em;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+    padding: 0.75rem 1.2rem;
+    border-radius: var(--radius-md);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 1.2rem;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--gray-200);
+    color: var(--gray-800);
+    padding: 0.75rem 1.2rem;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+}
+
+.add-remediation, .save-btn, .cancel-btn{
+    margin:10px 2px;
+}
+
+.btn-icon {
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-icon.delete,
+.remove-entry {
+    background: #dc2626;
+}
+
+.copy-btn {
+    margin-top: 1rem;
+}
+
+/* Wizard navigation row */
+.wizard-nav {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ============================================================
+   CHIP SYSTEM (used across all tools)
+============================================================ */
+.chip-box {
+    width: 86%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border: 1px dashed var(--gray-300);
+    background: white;
+    padding: 0.6rem;
+    border-radius: var(--radius-sm);
+    min-height: 40px;
+}
+
+.chip {
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.chip .close {
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ============================================================
+   DYNAMIC ROWS (Modules, Entries, Services, Tags)
+============================================================ */
+.dynamic-row,
+.dynamic-input-row,
+.tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    width: 90%;
+}
+
+.module-card,
+.entry-card {
+    border: 1px solid var(--gray-300);
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.module-header,
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.module-app-input{
+    border: 1px solid var(--gray-300);
+    background: var(--gray-50);
+    padding: 1rem;
+    display: block;
+}
+
+/* ============================================================
+   JSON PREVIEW
+============================================================ */
+pre.json-preview {
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+    max-height: 350px;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+/* Validation results panel */
+#json_errors {
+    margin-top: 1rem;
+}
+
+.valid-ok {
+    color: #006400;
+    margin-top: 1rem;
+}
+
+/* ============================================================
+   RELEASE TAGS — CSV HINT BOX
+============================================================ */
+.csv-hint {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+}
+
+.csv-format {
+    background: #f5f6fa;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* ============================================================
+   SMALL HELPERS
+============================================================ */
+.hidden {
+    display: none !important;
+}
+
+.small-note {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}

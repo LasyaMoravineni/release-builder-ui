@@ -1,0 +1,13 @@
+﻿namespace,jira_ref,component_name,component_tag,component_env_config
+core,DEMO-123,api-application-status,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-application-status:R6.12.0-1976-1758552491847,ADD Module ABC
+core,DEMO-123,api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-ump:R6.12.0-1977-1758552602753,ADD Module ABC
+core,DEMO-123,profile-api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/profile-api-ump:R6.12.0-1978-1758552710977,ADD Module ABC
+sfe,DEMO-123,api-application-status,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-application-status:R6.12.0-1976-1758552491847,ADD Module ABC
+sfe,DEMO-123,api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-ump:R6.12.0-1977-1758552602753,ADD Module ABC
+sfe,DEMO-123,profile-api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/profile-api-ump:R6.12.0-1978-1758552710977,ADD Module ABC
+gateway,DEMO-123,api-application-status,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-application-status:R6.12.0-1976-1758552491847,ADD Module ABC
+gateway,DEMO-123,api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-ump:R6.12.0-1977-1758552602753,ADD Module ABC
+gateway,DEMO-123,profile-api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/profile-api-ump:R6.12.0-1978-1758552710977,ADD Module ABC
+gateway,DEMO-123,api-application-status,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-application-status:R6.12.0-1976-1758552491847,ADD Module ABC
+gateway,DEMO-123,api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/api-ump:R6.12.0-1977-1758552602753,ADD Module ABC
+gateway,DEMO-123,profile-api-ump,845515228646.dkr.ecr.us-east-1.amazonaws.com/profile-api-ump:R6.12.0-1978-1758552710977,ADD Module ABC

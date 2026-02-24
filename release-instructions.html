@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Release Instructions Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/main.css" />
+</head>
+
+<body>
+
+<div class="page-container">
+
+<!-- ===========================
+     SIDEBAR NAVIGATION
+=========================== -->
+<div class="sidebar">
+    <div class="sidebar-title">Release Instructions</div>
+
+    <ul class="step-nav" id="stepNav">
+        <li data-step="1" class="active">1. Release Info</li>
+        <li data-step="2">2. Manual Changes</li>
+        <li data-step="3">3. Review</li>
+    </ul>
+</div>
+
+<!-- ===========================
+     MAIN CONTENT
+=========================== -->
+<div class="wizard-content">
+
+<!-- ===========================
+     STEP 1 — RELEASE INFO
+=========================== -->
+<div class="step-panel active" id="step1">
+
+    <div class="form-section-title">Release Information</div>
+
+    <div class="form-group">
+        <label class="form-label">File Type</label>
+        <input class="form-input" value="release_instructions" readonly />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release Version *</label>
+        <input id="release_version" class="form-input" placeholder="R6.1.0" />
+        <div id="release_version_err" class="error-msg"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release Date *</label>
+        <input id="release_date" type="date" class="form-input" />
+        <div id="release_date_err" class="error-msg"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release By (email) *</label>
+        <input id="release_by" type="email" class="form-input" placeholder="user@cisco.com" />
+        <div id="release_by_err" class="error-msg"></div>
+    </div>
+
+</div>
+
+
+<!-- ===========================
+     STEP 2 — MANUAL CHANGES
+=========================== -->
+<div class="step-panel" id="step2">
+
+    <div class="form-section-title">Manual Changes</div>
+
+    <div id="manual_changes_container" style="margin-top:1rem;"></div>
+    <button id="add_change_btn" class="btn-primary">+ Add Instruction</button>
+    <div class="error-msg" id="instruction_err"></div>
+
+</div>
+
+
+<!-- ===========================
+     STEP 3 — REVIEW
+=========================== -->
+<div class="step-panel" id="step3">
+
+    <div class="form-section-title">Review & Generate JSON</div>
+
+    <pre id="json_output" class="json-preview">{}</pre>
+    <div id="validation_status_box" class="small-note">
+        Please validate the JSON before downloading.
+    </div>
+
+    <div id="json_errors" style="margin-bottom:12px"></div>
+    <button class="btn-primary" id="validateJsonBtn">Validate JSON</button>
+    <button id="copy_btn" class="btn-primary copy-btn">Copy JSON</button>
+    <button id="download_btn" class="btn-primary">Download JSON</button>
+    
+    
+
+</div>
+
+
+<!-- ===========================
+     NAVIGATION BUTTONS
+=========================== -->
+<div class="wizard-nav">
+    <button class="btn-secondary" id="backBtn">Back</button>
+    <button class="btn-primary" id="nextBtn">Next</button>
+</div>
+
+</div><!-- wizard-content -->
+</div><!-- page-container -->
+
+
+<!-- ===========================
+     TEMPLATE — SINGLE CHANGE CARD
+=========================== -->
+<template id="manual_change_template">
+<div class="module-card manual-change">
+
+    <div class="module-header">
+        <div>Instruction <span class="change-index"></span></div>
+        
+        <button class="btn-icon delete remove-change" style="float:right;">-</button>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Sequence ID *</label>
+        <input type="number" class="form-input sequence_id" placeholder="Order of execution"/>
+        <div class="error-msg sequence_id_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Phase *</label>
+        <select class="form-select phase">
+            <option value="">-- Select --</option>
+            <option>Pre-Deployment</option>
+            <option>Deployment</option>
+            <option>Post-Deployment</option>
+        </select>
+        <div class="error-msg phase_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-select category">
+            <option value="">-- Select --</option>
+            <option>IAM/Security</option>
+            <option>DB/MySQL</option>
+            <option>Infra/Kafka</option>
+            <option>Compute</option>
+            <option>Custom</option>
+        </select>
+        <div class="error-msg category_err"></div>
+    </div>
+
+    <div class="form-group">
+        <input type="text" class="form-input custom_category_input hidden" placeholder="Enter custom category" >
+        <div class="error-msg custom_category_err"></div>
+    </div>
+
+    
+
+
+    <div class="form-group">
+        <label class="form-label">Jira Ref</label>
+        <input class="form-input jira_ref" placeholder="Jira Ticket ID" />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Owner (email)</label>
+        <input class="form-input owner_email" placeholder="user@cisco.com"/>
+        <div class="error-msg owner_email_err"></div>
+    </div>
+
+        <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea class="form-textarea description" placeholder="Explain the change"></textarea>
+        <div class="error-msg description_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Namespaces *</label>
+        <input class="form-input namespaces" placeholder="Example: core" />
+        <div class="error-msg namespaces_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Components *</label>
+        <div class="chip-box components_box">
+            <input class="form-input comp-input" placeholder="Press Enter to add" />
+        </div>
+        <div class="error-msg components_err"></div>
+    </div>
+
+    <!-- AUTOMATION FIELDS -->
+    <div class="form-group">
+        <label class="form-label">Automation *</label>
+        <select class="form-select automation">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <div class="error-msg automation_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Automation Script</label>
+        <textarea class="form-textarea automation_script hidden" placeholder="Enter script details"></textarea>
+        <div class="error-msg automation_script_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Restart Required *</label>
+        <select class="form-select restart_required">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <div class="error-msg restart_required_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Downtime Required *</label>
+        <select class="form-select downtime_required">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <div class="error-msg downtime_required_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Estimated Downtime</label>
+        <input class="form-input estimated_downtime hidden" placeholder="00:30:00" />
+        <div class="error-msg estimated_downtime_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Rollback Possible *</label>
+        <select class="form-select rollback_possible">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <div class="error-msg rollback_possible_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Risk Level *</label>
+        <select class="form-select risk_level">
+            <option value="">-- Select --</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Not Applicable</option>
+        </select>
+        <div class="error-msg risk_level_err"></div>
+    </div>
+
+    <!-- Steps -->
+    <!-- Prerequisites -->
+    <div class="form-group">
+        <div class="subsection-title">Prerequisites</div>
+
+        <div class="prereq_list steps-list"></div>
+
+        <button type="button" class="btn-icon add-step-btn prereq_add_btn">
+            + Add 
+        </button>
+
+        <div class="error-msg prereq_err"></div>
+    </div>
+
+    <!-- Execution Steps -->
+    <div class="form-group">
+        <div class="subsection-title">Execution Steps *</div>
+
+        <div class="exec_list steps-list"></div>
+
+        <button type="button" class="btn-icon add-step-btn exec_add_btn">
+            + Add 
+        </button>
+
+        <div class="error-msg exec_err"></div>
+    </div>
+
+    <!-- Validation Steps -->
+    <div class="form-group">
+        <div class="subsection-title">Validation Steps *</div>
+
+        <div class="val_list steps-list"></div>
+
+        <button type="button" class="btn-icon add-step-btn val_add_btn">
+            + Add 
+        </button>
+
+        <div class="error-msg val_err"></div>
+    </div>
+
+    <!-- Rollback Steps -->
+    <div class="form-group">
+        <div class="subsection-title">Rollback Steps</div>
+
+        <div class="rb_list steps-list"></div>
+
+        <button type="button" class="btn-icon add-step-btn rb_add_btn">
+            + Add 
+        </button>
+
+        <div class="error-msg rb_err"></div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="form-label">Responsible Team *</label>
+        <input class="form-input responsible_team" placeholder="Ex: Cloud Infra Team" />
+        <div class="error-msg responsible_team_err"></div>
+    </div>
+
+</div>
+</template>
+
+
+<!-- SCRIPT -->
+<script src="scripts/shared-validator.js"></script>
+<script src="scripts/release-instructions-script.js"></script>
+
+</body>
+</html>

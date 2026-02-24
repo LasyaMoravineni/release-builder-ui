@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Release Notes Builder</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/main.css">
+
+</head>
+
+<body>
+
+<div class="page-container">
+
+<!-- ===========================
+     SIDEBAR NAVIGATION
+=========================== -->
+<div class="sidebar">
+    <div class="sidebar-title">Release Notes</div>
+
+    <ul class="step-nav" id="stepNav">
+        <li data-step="1" class="active">1. Release Info</li>
+        <li data-step="2">2. Impact</li>
+        <li data-step="3">3. Modules</li>
+        <li data-step="4">4. QA Info</li>
+        <li data-step="5">5. Testing</li>
+        <li data-step="6">6. Review</li>
+    </ul>
+</div>
+
+<!-- ===========================
+     WIZARD CONTENT
+=========================== -->
+<div class="wizard-content">
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step1">
+    <div class="form-section-title">Release Information</div>
+
+    <div class="subsection">
+        <div class="subsection-title">General Details</div>
+
+    <div class="form-group">
+        <label class="form-label">File Type</label>
+        <input type="text" class="form-input" value="release_notes" disabled >
+    </div>
+
+        <div class="form-group">
+            <label class="form-label">Release Version *</label>
+            <input id="release_version" class="form-input" placeholder="Example: R6.12.0">
+            <div class="error-msg" id="v_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Release Date *</label>
+            <input type="date" id="release_date" class="form-input">
+            <div class="error-msg" id="d_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Release Type *</label>
+            <select id="release_type" class="form-select">
+                <option value="">-- Select --</option>
+                <option>Major</option>
+                <option>Minor</option>
+                <option>Patch</option>
+                <option>Hotfix</option>
+            </select>
+            <div class="error-msg" id="t_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Release Summary *</label>
+            <textarea id="release_summary" class="form-textarea" placeholder="Minimum 50 words"></textarea>
+            <div class="error-msg" id="s_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Release Manager (email) *</label>
+            <input type="email" id="release_manager" class="form-input" placeholder="user@cisco.com">
+            <div class="error-msg" id="m_err"></div>
+        </div>
+    </div>
+
+    <div class="subsection">
+        <div class="subsection-title">Security & Compliance</div>
+
+        <div class="form-group">
+        <label class="form-label">Vulnerability Scan *</label>
+        <select id="vscan" class="form-select">
+            <option value="">-- Select --</option>
+            <option>Not Applicable</option>
+            <option>Completed Successfully</option>
+            <option>Completed with Errors</option>
+        </select>
+        <div class="error-msg" id="vscan_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Security Approval Status *</label>
+        <select id="security_approval" class="form-select">
+            <option value="">-- Select --</option>
+            <option>Not Applicable</option>
+            <option>Approved</option>
+            <option>Not Approved</option>
+        </select>
+        <div class="error-msg" id="security_approval_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Cross Tenant Data Leak Check *</label>
+        <select id="data_leak" class="form-select">
+            <option value="">-- Select --</option>
+            <option>Not Applicable</option>
+            <option>Completed Successfully</option>
+            <option>Completed with Errors</option>
+        </select>
+        <div class="error-msg" id="data_leak_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Customer Notification Required *</label>
+        <select id="customer_notification" class="form-select">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+            <option value="na">Not Applicable</option>
+        </select>
+        <div class="error-msg" id="customer_notification_error"></div>
+    </div>
+
+    <div class="form-group" id="notify_message_group" style="display:none;">
+        <label class="form-label">Customer Notification Message (optional)</label>
+        <textarea id="customer_notification_message" class="form-textarea"
+            placeholder="Write the customer-facing message here…"></textarea>
+        
+    </div>
+
+    </div>
+
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step2">
+    <div class="form-section-title">Impact</div>
+
+    <div class="form-group">
+        <label class="form-label">Affected Services *</label>
+        <div id="services_container" class="services-flex"></div>
+        <button class="btn-icon" id="add_service_btn">Add Service +</button>
+        <div class="error-msg" id="services_err"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Impact Level *</label>
+        <select id="impact_level" class="form-select">
+            <option value="">-- Select --</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+            <option>None</option>
+        </select>
+        <div class="error-msg" id="impact_level_err"></div>
+    </div>
+
+    <div class="form-group" id="downtime-field">
+        <label class="form-label">Expected Downtime </label>
+        <input id="expected_downtime" class="form-input" placeholder="HH:MM:SS">
+        <div class="error-msg" id="downtime_err"></div>
+    </div>
+
+
+    <div class="form-group" id="details-field">
+        <label class="form-label">Impact Details </label>
+        <textarea id="impact_details" class="form-textarea" placeholder="Describe the expected impact (performance, functionality, dependencies, etc.)
+        "></textarea>
+        <div class="error-msg" id="impact_details_error"></div>
+    </div>
+
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step3">
+    <div class="form-section-title">Modules</div>
+
+    <div id="modules_container"></div>
+    <button class="btn-icon" id="add_module_btn">+ Add Module</button>
+    <div class="error-msg" id="module_err"></div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step4">
+    <div class="form-section-title">QA Information</div>
+
+    <!-- <div class="qa-section"> -->
+
+        <div class="form-group">
+            <label class="form-label">Conducted By *</label>
+            <input id="qa_by" class="form-input">
+            <div class="error-msg" id="qa_by_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Results (URL) *</label>
+            <input type="text" id="qa_results" class="form-input">
+            <div class="error-msg" id="qa_results_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Status Notes *</label>
+            <textarea id="status_notes" class="form-textarea"></textarea>
+            <div class="error-msg" id="status_notes_err"></div>
+
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Point of Contact *</label>
+            <input type="text" id="qa_poc" class="form-input">
+            <div class="error-msg" id="qa_poc_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Approved By *</label>
+            <input type="text" id="qa_approved_by" class="form-input">
+            <div class="error-msg" id="qa_approved_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Status *</label>
+            <select id="qa_status" class="form-select">
+                <option value="">-- Select --</option>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+                <option>Blocked</option>
+            </select>
+            <div class="error-msg" id="qa_status_err"></div>
+        </div>
+
+
+        <h3>CRS Test</h3>
+
+        <div class="form-group">
+            <label class="form-label">crs_test_status *</label>
+            <select id="crs_status" class="form-select">
+                <option value="">-- Select --</option>
+                <option>Pending</option>
+                <option>Completed</option>
+                <option>Failed</option>
+            </select>
+            <div class="error-msg" id="crs_status_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">crs_test_status_notes</label>
+            <textarea id="crs_status_notes" class="form-textarea"></textarea>
+        </div>
+
+
+        <h3>Rollback Test</h3>
+
+        <div class="form-group">
+            <label class="form-label">rollback_test_status *</label>
+            <select id="rollback_status" class="form-select">
+                <option value="">-- Select --</option>
+                <option>Pending</option>
+                <option>Completed</option>
+                <option>Failed</option>
+            </select>
+            <div class="error-msg" id="rollback_status_err"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">rollback_test_status_notes</label>
+            <textarea id="rollback_status_notes" class="form-textarea"></textarea>
+        </div>
+
+
+        <h3>Coverage *</h3>
+        <div id="coverage_container"></div>
+        <button class="btn-icon" type="button" id="add_coverage_btn">+ Add Coverage</button>
+
+    <!-- </div> -->
+</div>
+
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step5">
+    <div class="form-section-title">Testing</div>
+
+    <!-- Testing Stages -->
+    <div class="form-group">
+        <label class="form-label">Testing Stages *</label>
+        <div class="chip-box" id="testing_stages_box">
+            <input type="text" id="testing_stages_input" class="form-input" placeholder="Press Enter to add">
+        </div>
+        <div class="error-msg" id="testing_stages_error"></div>
+    </div>
+
+    <!-- Is Sanity Automated -->
+    <div class="form-group">
+        <label class="form-label">Sanity Automated *</label>
+        <select id="sanity_automated" class="form-select">
+            <option value="">-- Select --</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <div class="error-msg" id="sanity_automated_error"></div>
+    </div>
+
+    <!-- Automation Tools -->
+    <div class="form-group">
+        <label class="form-label">Automation Tools </label>
+        <div class="chip-box" id="automation_tools_box">
+            <input type="text" id="automation_tools_input" class="form-input" placeholder="Press Enter to add">
+        </div>
+        <div class="error-msg" id="automation_tools_error"></div>
+    </div>
+
+    <!-- QA Observations -->
+    <div class="form-group">
+        <label class="form-label">QA Observations </label>
+        <div id="qa_observations_container">
+            <div class="dynamic-input-row">
+                <input type="text" class="form-input qa_observation_input" placeholder="Enter observation">
+                <button type="button" class="btn-icon" onclick="addQAObservation(this)">+</svg></button>
+                <button type="button" class="btn-icon delete" onclick="removeQAObservation(this)">-</button>
+            </div>
+        </div>
+        <div class="error-msg" id="qa_observations_error"></div>
+    </div>
+
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step6">
+    <div class="form-section-title">Review & Generate JSON</div>
+
+    <pre class="json-preview" id="json_output"></pre>
+
+    <div id="validation_status_box" class="small-note">
+        Please validate the JSON before downloading.
+    </div>
+
+
+    <div id="json_errors" style="margin-bottom:12px"></div>
+    <button id="validateJsonBtn" class="btn-primary">Validate JSON</button>
+    <button class="btn-primary copy-btn" id="copyBtn">Copy JSON</button>
+    <button class="btn-primary" id="downloadBtn">Download JSON</button>
+   
+
+</div>
+
+<!-- Navigation buttons -->
+<div class="wizard-nav">
+    <button class="btn-secondary" id="backBtn">Back</button>
+    <button class="btn-primary" id="nextBtn">Next</button>
+</div>
+
+</div> <!-- end wizard-content -->
+
+</div> <!-- end page-container -->
+
+<script src="scripts/shared-validator.js"></script>
+<script src="scripts/release-notes-script.js"></script>
+
+</body>
+</html>

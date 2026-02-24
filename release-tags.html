@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Release Tags Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/main.css">
+
+</head>
+<body>
+
+<div class="page-container">
+
+<!-- ===========================
+     SIDEBAR
+=========================== -->
+<div class="sidebar">
+    <div class="sidebar-title">Release Tags</div>
+
+    <ul class="step-nav" id="stepNav">
+        <li data-step="1" class="active">1. Tags Info</li>
+        <li data-step="2">2. Tags Entry</li>
+        <li data-step="3">3. Review</li>
+    </ul>
+</div>
+
+<!-- ===========================
+     MAIN CONTENT
+=========================== -->
+<div class="wizard-content">
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step1">
+    <div class="form-section-title">Release Information</div>
+
+    <div class="form-group">
+        <label class="form-label">File Type</label>
+        <input type="text" class="form-input" value="release_notes" disabled >
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label">Release Version *</label>
+        <input id="release_version" class="form-input" placeholder="Example: R6.12.0">
+        <div class="error-msg" id="release_version_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release Date *</label>
+        <input type="date" id="release_date" class="form-input">
+        <div class="error-msg" id="release_date_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release Type *</label>
+        <select id="release_type" class="form-select">
+            <option value="">-- Select --</option>
+            <option>Major</option>
+            <option>Minor</option>
+            <option>Patch</option>
+            <option>Hotfix</option>
+        </select>
+        <div class="error-msg" id="release_type_error"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Release Manager *</label>
+        <input type="email" id="release_manager" class="form-input" placeholder="user@cisco.com">
+        <div class="error-msg" id="release_manager_error"></div>
+    </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step2">
+
+    <div class="form-section-title">Tags Entry</div>
+
+    <div class="form-group">
+        <label class="form-label">Entry Mode *</label>
+        <select id="entry_mode" class="form-select">
+            <option value="">-- Select --</option>
+            <option value="manual">Manual Entry</option>
+            <option value="file">CSV Upload</option>
+        </select>
+        <div class="error-msg" id="entry_mode_error"></div>
+    </div>
+
+    <!-- Manual Entry -->
+    <div id="manual_container" style="display:none;">
+        <div class="subsection-title">Manual Tags</div>
+        <div id="tags_list"></div>
+        <button class="btn-icon" id="add_tag_btn">+ Add Tag</button>
+    </div>
+
+    <!-- File Upload -->
+    <div id="file_container" style="display:none;">
+        <label class="form-label">Upload CSV *</label>
+        <input type="file" id="csv_input" accept=".csv" class="form-input">
+        <div class="error-msg" id="file_upload_error"></div>
+
+        <!-- CSV Sample Format + Download Button -->
+        <div class="csv-hint">
+            <p><strong>CSV Format should be:</strong></p>
+            <pre class="csv-format">namespace,jira_ref,component_name,component_tag,component_env_config
+            </pre>
+            <button id="downloadSampleCSV" class="btn-icon">Download Sample CSV</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step3">
+
+    <div class="form-section-title">JSON Preview</div>
+    <pre class="json-preview" id="json_output"></pre>
+
+    <div id="validation_status_box" class="small-note">
+        Please validate the JSON before downloading.
+    </div>
+
+
+    <div id="json_errors" style="margin-bottom:12px"></div>
+    <button class="btn-primary" id="validateJsonBtn">Validate JSON</button>
+    <button class="btn-primary" id="copyBtn">Copy JSON</button>
+    <button class="btn-primary" id="downloadBtn">Download JSON</button>
+
+    
+
+
+</div>
+
+<!-- Navigation Buttons -->
+<div class="wizard-nav">
+    <button class="btn-secondary" id="backBtn" style="visibility:hidden;">Back</button>
+    <button class="btn-primary" id="nextBtn">Next</button>
+</div>
+
+</div>
+</div> <!-- container end -->
+
+
+<script src="scripts/shared-validator.js"></script>
+<script src="scripts/release-tags-script.js"></script>
+
+</body>
+</html>
